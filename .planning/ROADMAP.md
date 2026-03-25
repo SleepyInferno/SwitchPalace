@@ -30,12 +30,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. If the user powers off or cancels mid-install, no orphaned placeholders remain on the system
   4. User can clone the repository, run the documented build, and produce an identical NRO binary
   5. App displays whether it is running in applet mode or application mode and adapts accordingly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Project scaffold, build system, borealis integration, container parsers, type contracts
+- [ ] 01-02-PLAN.md — NCA install pipeline engine (NCM wrapper, NCA writer, NCZ decompression, NSP/XCI installers)
+- [ ] 01-03-PLAN.md — UI screens (file browser, progress, summary, dialogs) + integration wiring + hardware verification
 
 ### Phase 2: PC Companion & USB Install
 **Goal**: Users can install games from their PC to the Switch over USB using the SwitchPalace companion, with optimized transfer speeds and clear driver setup guidance
