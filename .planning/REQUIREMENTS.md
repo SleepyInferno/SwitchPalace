@@ -109,21 +109,52 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INST-01 through INST-06 | Phase 1 | Pending |
-| USB-01 through USB-04, USB-07 | Phase 2 | Pending |
-| NET-01 through NET-07 | Phase 3 | Pending |
-| USB-05, USB-06 | Phase 4 | Pending |
-| FILE-01 through FILE-05 | Phase 4 | Pending |
-| MGMT-01 through MGMT-04 | Phase 4 | Pending |
-| SAVE-01 through SAVE-03 | Phase 5 | Pending |
-| ADV-01 through ADV-04 | Phase 5 | Pending |
-| TRUST-01 through TRUST-04 | Phase 1 | Pending |
+| INST-01 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-02 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-03 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-04 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-05 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-06 | Phase 1: Foundation & Install Pipeline | Pending |
+| TRUST-01 | Phase 1: Foundation & Install Pipeline | Pending |
+| TRUST-02 | Phase 1: Foundation & Install Pipeline | Pending |
+| TRUST-03 | Phase 1: Foundation & Install Pipeline | Pending |
+| TRUST-04 | Phase 1: Foundation & Install Pipeline | Pending |
+| USB-01 | Phase 2: PC Companion & USB Install | Pending |
+| USB-02 | Phase 2: PC Companion & USB Install | Pending |
+| USB-03 | Phase 2: PC Companion & USB Install | Pending |
+| USB-04 | Phase 2: PC Companion & USB Install | Pending |
+| USB-07 | Phase 2: PC Companion & USB Install | Pending |
+| NET-01 | Phase 3: Network Install | Pending |
+| NET-02 | Phase 3: Network Install | Pending |
+| NET-03 | Phase 3: Network Install | Pending |
+| NET-04 | Phase 3: Network Install | Pending |
+| NET-05 | Phase 3: Network Install | Pending |
+| NET-06 | Phase 3: Network Install | Pending |
+| NET-07 | Phase 3: Network Install | Pending |
+| USB-05 | Phase 4: MTP, File & Game Management | Pending |
+| USB-06 | Phase 4: MTP, File & Game Management | Pending |
+| MGMT-01 | Phase 4: MTP, File & Game Management | Pending |
+| MGMT-02 | Phase 4: MTP, File & Game Management | Pending |
+| MGMT-03 | Phase 4: MTP, File & Game Management | Pending |
+| MGMT-04 | Phase 4: MTP, File & Game Management | Pending |
+| FILE-01 | Phase 4: MTP, File & Game Management | Pending |
+| FILE-02 | Phase 4: MTP, File & Game Management | Pending |
+| FILE-03 | Phase 4: MTP, File & Game Management | Pending |
+| FILE-04 | Phase 4: MTP, File & Game Management | Pending |
+| FILE-05 | Phase 4: MTP, File & Game Management | Pending |
+| SAVE-01 | Phase 5: Saves, Tickets & Activity | Pending |
+| SAVE-02 | Phase 5: Saves, Tickets & Activity | Pending |
+| SAVE-03 | Phase 5: Saves, Tickets & Activity | Pending |
+| ADV-01 | Phase 5: Saves, Tickets & Activity | Pending |
+| ADV-02 | Phase 5: Saves, Tickets & Activity | Pending |
+| ADV-03 | Phase 5: Saves, Tickets & Activity | Pending |
+| ADV-04 | Phase 5: Saves, Tickets & Activity | Pending |
 
 **Coverage:**
-- v1 requirements: 34 total
-- Mapped to phases: 34
-- Unmapped: 0 ✓
+- v1 requirements: 40 total
+- Mapped to phases: 40
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-25*
-*Last updated: 2026-03-25 after initial definition*
+*Last updated: 2026-03-25 after roadmap creation*
