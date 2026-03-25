@@ -48,11 +48,12 @@ Exceptions: Controller touch targets minimum 44px height for all focusable list 
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Screen Title | 34sp | 700 (Bold) | 1.2 |
+| Screen Title | 34sp | 600 (Semibold) | 1.2 |
 | Section Header | 22sp | 600 (Semibold) | 1.2 |
 | Body / List Item | 17sp | 400 (Regular) | 1.5 |
-| Metadata / Caption | 13sp | 400 (Regular) | 1.4 |
-| Badge / Label | 11sp | 600 (Semibold) | 1.0 |
+| Caption / Metadata / Badge / Label | 13sp | 400 (Regular) or 600 (Semibold) | 1.4 |
+
+Two-weight system: 400 Regular and 600 Semibold only. Caption/Metadata uses 13sp/400; Badge/Label uses 13sp/600. Same size, weight differentiates role.
 
 Note: "sp" is borealis scale-independent pixels. Use borealis framework font at all sizes; no custom fonts.
 
@@ -85,8 +86,8 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 
 | Element | Visual Specification |
 |---------|---------------------|
-| App bar | Screen title "SwitchPalace" at 34sp/700, left-aligned, `#FFFFFF` on `#1A1A1A` bg |
-| Applet badge | Top-right corner, `#FFD60A` bg / `#1A1A1A` text, 11sp/600 uppercase "APPLET", 4px radius, 4px internal padding, persistent and always visible when in applet mode |
+| App bar | Screen title "SwitchPalace" at 34sp/600, left-aligned, `#FFFFFF` on `#1A1A1A` bg |
+| Applet badge | Top-right corner, `#FFD60A` bg / `#1A1A1A` text, 13sp/600 uppercase "APPLET", 4px radius, 4px internal padding, persistent and always visible when in applet mode |
 | File list | Scrollable vertical list on `#242424` surface panel, 8px corner radius |
 | File list item | 17sp/400 filename in `#FFFFFF`, 13sp/400 file size + format badge in `#ADADAD`, 16px vertical padding, 16px horizontal padding, full-width |
 | File list item (selected) | `#3D9CF0` left border 3px + subtle `#3D9CF0` at 8% opacity background tint |
@@ -130,7 +131,7 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 
 | Element | Visual Specification |
 |---------|---------------------|
-| Summary title | 34sp/700 `#FFFFFF`, text: "Installation Complete" or "Installation Finished" (if any failures) |
+| Summary title | 34sp/600 `#FFFFFF`, text: "Installation Complete" or "Installation Finished" (if any failures) |
 | Result list | Full list of all files with pass/fail status, same styling as per-file status items on progress screen |
 | Pass row | `#30D158` checkmark + filename + "Verified" label at 13sp/400 `#30D158` |
 | Fail row | `#FF453A` X + filename + error reason at 13sp/400 `#FF453A` |
@@ -144,7 +145,7 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 | Dialog card | Same as cancel dialog styling |
 | Dialog title | 22sp/600 `#FFFFFF`, text: "Already Installed" |
 | Dialog body | 17sp/400 `#ADADAD`, text: see Copywriting Contract |
-| OK button | `#3D9CF0` bg, `#FFFFFF` text, label: "OK" |
+| Dismiss button | `#3D9CF0` bg, `#FFFFFF` text, label: "Dismiss" |
 
 ---
 
@@ -166,6 +167,7 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 | Cancel confirmation body | "The current install will be stopped and all progress rolled back. No partial files will remain on your system." |
 | Cancel confirmation confirm | "Cancel Install" |
 | Cancel confirmation dismiss | "Continue Installing" |
+| Conflict dialog dismiss | "Dismiss" |
 | Summary: all passed | "{N} of {N} installed successfully" |
 | Summary: some failed | "{passed} of {total} installed successfully" |
 | Summary: dismiss | "Press B to return to file browser" |
@@ -204,7 +206,7 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 [Cancel Confirmation] ---(dismiss)---> [Install Progress]
 [Post-Install Summary] ---(B)---> [File Browser]
 [File Browser] ---(conflict detected before install)---> [Conflict Error Dialog]
-[Conflict Error Dialog] ---(OK)---> [File Browser]
+[Conflict Error Dialog] ---(Dismiss)---> [File Browser]
 ```
 
 ---
