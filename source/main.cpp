@@ -29,6 +29,18 @@ bool switchpalace_isAppletMode()
     return g_isAppletMode;
 }
 
+#ifdef __SWITCH__
+// Write a log line to sdmc:/switchpalace_debug.log.
+// Called before borealis init so crashes during GPU/service init leave a trace.
+static void debugLog(const char* msg)
+{
+    FILE* f = fopen("sdmc:/switchpalace_debug.log", "a");
+    if (f) { fprintf(f, "%s\n", msg); fclose(f); }
+}
+#else
+static void debugLog(const char*) {}
+#endif
+
 int main(int argc, char* argv[])
 {
     // Detect applet vs application mode
@@ -38,6 +50,9 @@ int main(int argc, char* argv[])
     (void)appletType; // Used via isAppletMode() helper
 #endif
     g_isAppletMode = switchpalace::nx::isAppletMode();
+
+    debugLog("main: entered");
+    debugLog(g_isAppletMode ? "mode: APPLET" : "mode: APPLICATION");
 
     brls::Logger::setLogLevel(brls::LogLevel::LOG_DEBUG);
     brls::Logger::debug("SwitchPalace starting in {} mode",
@@ -50,17 +65,22 @@ int main(int argc, char* argv[])
     // Wrap in try/catch: borealis calls fatal() which throws std::logic_error on
     // init failure (e.g. GPU context failure). Without this, the exception is
     // unhandled, causing std::terminate() -> abort() -> error 2168-0001.
+    debugLog("borealis: calling Application::init");
     try
     {
         if (!brls::Application::init())
         {
+            debugLog("borealis: Application::init returned false");
             brls::Logger::error("Failed to initialize borealis application");
             return EXIT_FAILURE;
         }
+        debugLog("borealis: Application::init OK, calling createWindow");
         brls::Application::createWindow("SwitchPalace");
+        debugLog("borealis: createWindow OK");
     }
     catch (const std::exception& e)
     {
+        debugLog("borealis: caught exception during init");
         brls::Logger::error("Borealis init exception: {}", e.what());
         return EXIT_FAILURE;
     }
