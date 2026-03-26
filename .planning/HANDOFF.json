@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-26T17:07:35.467Z",
+  "timestamp": "2026-03-26T17:36:55.505Z",
   "phase": "01",
   "phase_name": "foundation-install-pipeline",
   "phase_dir": ".planning/phases/01-foundation-install-pipeline",
   "plan": 3,
-  "task": 3,
-  "total_tasks": 3,
+  "task": 4,
+  "total_tasks": 6,
   "status": "paused",
   "completed_tasks": [
     {"id": 1, "name": "01-01 core install pipeline", "status": "done", "commit": "777a7a7"},
@@ -14,41 +14,33 @@
     {"id": 3, "name": "01-03 UI views wired to install pipeline", "status": "done", "commit": "584174d"},
     {"id": "fix-1", "name": "USE_STD_THREAD=ON pthread crash fix", "status": "done", "commit": "5f15763"},
     {"id": "fix-2", "name": "ScrollingFrame.setPadding crash fix + icon + Docker rebuild", "status": "done", "commit": "e092866"},
-    {"id": "fix-3", "name": "Install crash triple fix: wrong hash check + data race + repeated transitionToSummary", "status": "done", "commit": "280efdb"},
-    {"id": "fix-4", "name": "brls::sync() transition fix + double popActivity fix + new icon", "status": "done", "commit": "280efdb"}
+    {"id": "fix-3", "name": "Install crash triple fix: wrong hash check + data race + repeated transitionToSummary", "status": "done", "commit": "3375248"},
+    {"id": "fix-4", "name": "brls::sync() transition fix + double popActivity fix + new icon", "status": "done", "commit": "280efdb"},
+    {"id": "fix-5", "name": "dangling currentFocus after buildFileList clearViews — giveFocus fix", "status": "done", "commit": "pending-build"}
   ],
   "remaining_tasks": [
-    {"id": 4, "name": "hw-verify: user testing now (4th build), awaiting results", "status": "in_progress"},
+    {"id": 4, "name": "hw-verify: build fix-5, test file selection on hardware", "status": "in_progress"},
     {"id": 5, "name": "Remove fbDebugLog/debugLog/ivLog calls after confirmed working", "status": "not_started"},
     {"id": 6, "name": "Write 01-03-SUMMARY.md to close Phase 01", "status": "not_started"}
   ],
   "blockers": [],
   "human_actions_pending": [
     {
-      "action": "Return with hardware test results (log files or pass report)",
-      "context": "User needs to test dist/SwitchPalace.nro (6.8MB, commit 280efdb) — this is the fourth build iteration",
+      "action": "Build and deploy fix-5, hw-verify: launch app, select at least one file with A button, verify no crash on next frame",
+      "context": "fix-5 fixes dangling Application::currentFocus after buildFileList() clears old rows. Crash confirmed via Atmosphere log 01774544686. Build: docker run CMake rebuild → dist/SwitchPalace.nro → SD card.",
       "blocking": true
-    },
-    {
-      "action": "Clarify Codex workflow intent on resume",
-      "context": "User wants crash debugging split between Claude and Codex to reduce context load. Confirm: (a) OpenAI Codex CLI running in parallel externally, or (b) Claude Code agent subagents for internal research delegation. Implement before starting any new debug round.",
-      "blocking": false
     }
   ],
   "decisions": [
-    {"decision": "nifmInitialize added to switch_wrapper.c", "rationale": "borealis status bar calls nifm every frame; TRUST-03 maintained", "phase": "01"},
-    {"decision": "Switched to deko3D backend (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit fails in applet mode on fw 21.1.0", "phase": "01"},
-    {"decision": "__nx_heap_size = 64MB (0x4000000)", "rationale": "Safe ceiling for both applet and application mode", "phase": "01"},
-    {"decision": "USE_STD_THREAD=ON retained", "rationale": "Fixes borealis pthread task loop crash in NRO context (prior session)", "phase": "01"},
-    {"decision": "setPadding moved from m_scrollFrame to m_listContainer", "rationale": "borealis ScrollingFrame.setPadding calls fatal() -> throws std::logic_error -> uncaught = Instruction Abort on Switch", "phase": "01"},
-    {"decision": "resources/icon.jpg updated to Grand Nintendoh Palace 256x256 JPEG", "rationale": "User-provided image, center-cropped from 1024x559 source", "phase": "01"},
-    {"decision": "Removed wrong hash check in nsp.cpp: memcmp(sha256_hash, content_id, 16)", "rationale": "NCA content IDs are NOT SHA-256 hashes; check failed every install immediately", "phase": "01"},
-    {"decision": "m_installComplete changed to std::atomic<bool>", "rationale": "Plain bool is a data race — install thread writes, main thread reads", "phase": "01"},
-    {"decision": "Added m_hasTransitioned guard + m_updateTask->stop() before brls::sync()", "rationale": "Prevents queuing multiple sync() calls if updateUI() fires again before sync executes", "phase": "01"},
-    {"decision": "transitionToSummary deferred via brls::sync()", "rationale": "pushActivity called from Ticking::updateTickings() (before frame()) caused Data Abort at X[0]=null. brls::sync() defers to performSyncTasks() after frame().", "phase": "01"},
-    {"decision": "Double popActivity in summary_view.cpp fixed with callback chain", "rationale": "Deferred deletion keeps activity on stack until animation ends; two sync pops both target the same activity", "phase": "01"}
+    {"decision": "Root cause of session-5 crash: dangling Application::currentFocus after buildFileList()", "rationale": "clearViews() queues old rows to deletionPool; currentFocus NOT updated; old row deleted at end-of-frame → dangling ptr; next frame vtable ptr in freed memory = 0 → virtual dispatch at vtable[0xf0] → fault address 0xf0 (Data Abort)", "phase": "01"},
+    {"decision": "Fix: giveFocus(getDefaultFocus()) after buildFileList() in both click handler and B handler", "rationale": "Updates currentFocus to new valid row BEFORE old rows are deleted; properly calls onFocusLost deregistering animations", "phase": "01"},
+    {"decision": "Codex workflow = Option B: internal Claude Code Explore subagents for borealis research", "rationale": "Confirmed by user 2026-03-26; spawn Explore agents with targeted question, receive summary only in main context", "phase": "01"},
+    {"decision": "brls::sync() required for pushActivity from Ticking/RepeatingTask callback", "rationale": "pushActivity from updateTickings() (before frame()) caused Data Abort session 4", "phase": "01"},
+    {"decision": "USE_STD_THREAD=ON retained", "rationale": "Fixes borealis pthread task loop crash in NRO context", "phase": "01"},
+    {"decision": "deko3D backend (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit fails in applet mode on fw 21.1.0", "phase": "01"},
+    {"decision": "__nx_heap_size = 64MB", "rationale": "Safe ceiling for applet and application mode", "phase": "01"}
   ],
-  "uncommitted_files": [],
-  "next_action": "1. Clarify Codex workflow intent with user. 2. Receive hardware test results. 3. Check switchpalace_debug.log for 11 checkpoints. 4. If pass: remove debug logging, write 01-03-SUMMARY.md. 5. If crash: read last checkpoint reached, delegate source research to subagent, apply fix.",
-  "context_notes": "Four crash rounds total. All prior bugs fixed. Session 4 root cause: pushActivity called from inside updateTickings() (runs before frame() in main loop). Fix: brls::sync() defers to performSyncTasks() after frame(). Debug sessions ran context high because 15+ borealis source files were read one-by-one in main context. Next debug round should delegate source-file research to Explore subagent and only receive findings summary."
+  "uncommitted_files": ["source/ui/file_browser.cpp"],
+  "next_action": "1. Rebuild NRO (docker). 2. Deploy to SD. 3. hw-verify: select a file with A, verify no crash. 4. If pass: remove debug logging (fbDebugLog/ivLog/debugLog), write 01-03-SUMMARY.md. 5. If crash: read Atmosphere log, spawn Explore subagent.",
+  "context_notes": "Session 5: app crashed during file browsing (not install). Root cause: clearViews() in buildFileList() frees focused row to deletionPool but Application::currentFocus not updated. Freed memory vtable=0 → virtual call crashes at 0xf0. Fix: giveFocus(getDefaultFocus()) in click handler (file_browser.cpp:354) and B handler (file_browser.cpp:142). X[6]='_opacity' in crash was bytes 6-13 of 'brls/highlight/shadow_opacity' key being processed in drawHighlight. Two Explore subagents confirmed crash path. borealis source research should always use Explore subagents per user preference."
 }

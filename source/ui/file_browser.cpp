@@ -141,6 +141,7 @@ FileBrowserView::FileBrowserView()
             std::fill(m_selected.begin(), m_selected.end(), false);
             buildFileList();
             updateInstallButton();
+            brls::Application::giveFocus(getDefaultFocus());
         }
         else
         {
@@ -353,6 +354,7 @@ void FileBrowserView::buildFileList()
                 m_selected[idx] = !m_selected[idx];
                 buildFileList();
                 updateInstallButton();
+                brls::Application::giveFocus(getDefaultFocus());
                 return true;
             });
         }
