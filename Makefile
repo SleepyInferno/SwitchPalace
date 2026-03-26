@@ -30,6 +30,7 @@ switch:
 	@mkdir -p $(BUILD_DIR)
 	cd $(BUILD_DIR) && cmake .. \
 		-DPLATFORM_SWITCH=ON \
+		-DUSE_DEKO3D=ON \
 		-DCMAKE_BUILD_TYPE=Release
 	cd $(BUILD_DIR) && make -j$(NPROC)
 	cd $(BUILD_DIR) && make $(APP_TITLE).nro

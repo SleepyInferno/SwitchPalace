@@ -17,6 +17,6 @@ COPY . .
 RUN git submodule update --init --recursive && \
     mkdir -p build && \
     cd build && \
-    cmake .. -DPLATFORM_SWITCH=ON -DCMAKE_BUILD_TYPE=Release && \
+    cmake .. -DPLATFORM_SWITCH=ON -DUSE_DEKO3D=ON -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) && \
     make SwitchPalace.nro

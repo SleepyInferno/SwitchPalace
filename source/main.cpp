@@ -2,6 +2,7 @@
 #include <switch.h>
 #endif
 
+#include <stdexcept>
 #include <borealis.hpp>
 #include "nx/applet.hpp"
 #include "nx/content_mgmt.hpp"
@@ -46,13 +47,23 @@ int main(int argc, char* argv[])
     // TRUST-03: No network service initialization at startup.
     // Network is only initialized on-demand when user triggers network install.
     // TRUST-03 verified: no network service init calls in this file.
-    if (!brls::Application::init())
+    // Wrap in try/catch: borealis calls fatal() which throws std::logic_error on
+    // init failure (e.g. GPU context failure). Without this, the exception is
+    // unhandled, causing std::terminate() -> abort() -> error 2168-0001.
+    try
     {
-        brls::Logger::error("Failed to initialize borealis application");
+        if (!brls::Application::init())
+        {
+            brls::Logger::error("Failed to initialize borealis application");
+            return EXIT_FAILURE;
+        }
+        brls::Application::createWindow("SwitchPalace");
+    }
+    catch (const std::exception& e)
+    {
+        brls::Logger::error("Borealis init exception: {}", e.what());
         return EXIT_FAILURE;
     }
-
-    brls::Application::createWindow("SwitchPalace");
 
     // Clean up stale placeholders from prior crashed runs (INST-06 safety net)
     // Done after borealis init so NCM is accessed with display/services ready.

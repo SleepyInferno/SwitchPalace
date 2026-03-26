@@ -58,6 +58,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 # building release file
 if (PLATFORM_SWITCH)
     if (USE_DEKO3D)
+        # Ensure shaders output directory exists before compiling
+        file(MAKE_DIRECTORY "${PROJECT_RESOURCES}/shaders")
         gen_dksh("${PROJECT_RESOURCES}/shaders")
     endif ()
     add_custom_target(${PROJECT_NAME}.nro DEPENDS ${PROJECT_NAME}
