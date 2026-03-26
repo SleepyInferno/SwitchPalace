@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-26T13:14:36.197Z",
+  "timestamp": "2026-03-26T13:48:39.444Z",
   "phase": "01",
   "phase_name": "foundation-install-pipeline",
   "phase_dir": ".planning/phases/01-foundation-install-pipeline",
@@ -11,37 +11,36 @@
   "completed_tasks": [
     {"id": 1, "name": "01-01 core install pipeline", "status": "done", "commit": "777a7a7"},
     {"id": 2, "name": "01-02 NSP/XCI installers", "status": "done", "commit": "f04cbf7"},
-    {"id": 3, "name": "01-03 UI views wired", "status": "done", "commit": "584174d"}
+    {"id": 3, "name": "01-03 UI views wired to install pipeline", "status": "done", "commit": "584174d"}
   ],
   "remaining_tasks": [
-    {"id": 4, "name": "hw-verify: hardware testing checkpoint", "status": "blocked_on_crash"}
+    {"id": 4, "name": "hw-verify: hardware testing checkpoint", "status": "blocked_needs_rebuild"}
   ],
   "blockers": [
     {
-      "description": "App crashes on real Switch hardware (fw 21.1.0 / Atmosphere 1.10.1) — deko3D init crash. Second wave of SD card debug logging added to main.cpp and file_browser.cpp constructor to narrow crash step further.",
+      "description": "Root cause identified: borealis task loop pthread crashes on startup in NRO-under-hbloader context. Fix applied: USE_STD_THREAD=ON in Makefile + Dockerfile. Needs Docker rebuild and hardware re-test.",
       "type": "technical",
-      "workaround": "Deploy latest dist/SwitchPalace.nro, launch on hardware, retrieve sdmc:/switchpalace_debug.log — last line shows exact crash step"
+      "workaround": "Build with docker (make docker) then deploy and test"
     }
   ],
   "human_actions_pending": [
     {
-      "action": "Copy dist/SwitchPalace.nro to sd:/switch/SwitchPalace/SwitchPalace.nro and launch it, then retrieve sdmc:/switchpalace_debug.log and paste it",
-      "context": "Second round of debug logging added — logs now cover: main entered, applet mode, borealis init call, Application::init OK, createWindow OK, ContentManager cleanup, FileBrowserView ctor start, base layout set, titleBar added. Last line = crash step.",
+      "action": "Run 'make docker' to rebuild with USE_STD_THREAD=ON, copy dist/SwitchPalace.nro to Switch, and launch",
+      "context": "Fix changes borealis task loop thread from pthread_create (crashes in NRO context) to std::thread (properly initializes C++ runtime for new thread). If crash persists, also remove __nx_applet_type = AppletType_Default from source/main.cpp.",
       "blocking": true
     }
   ],
   "decisions": [
-    {"decision": "Added nifmInitialize(NifmServiceType_User) to switch_wrapper.c", "rationale": "borealis SwitchPlatform calls nifm status functions every frame for status bar; uninitialized handle = IPC crash = 2168-0001", "phase": "01"},
-    {"decision": "Switched video backend from GLFW+EGL to deko3D (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit() fails in applet mode on fw 21.1.0 — EGL/drm_nouveau applet-mode incompatibility; borealis fatal() throws uncaught std::logic_error -> abort. deko3D is the standard Switch GPU API used by all working borealis homebrew", "phase": "01"},
-    {"decision": "Reduced __nx_heap_size 128MB -> 64MB (0x4000000)", "rationale": "128MB is the hbloader ceiling in applet mode with no headroom", "phase": "01"},
-    {"decision": "Added try/catch around brls::Application::init()+createWindow()", "rationale": "borealis fatal() throws std::logic_error; uncaught = std::terminate -> abort -> 2168-0001", "phase": "01"},
-    {"decision": "Second round of SD card debug logging added to file_browser.cpp constructor", "rationale": "First round showed crash is after borealis init — now logging FileBrowserView construction steps to see if crash is in UI layout code vs borealis render thread startup", "phase": "01"}
+    {"decision": "nifmInitialize added to switch_wrapper.c", "rationale": "borealis status bar calls nifm every frame; uninitialized = IPC abort", "phase": "01"},
+    {"decision": "Switched to deko3D backend (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit fails in applet mode on fw 21.1.0", "phase": "01"},
+    {"decision": "__nx_heap_size = 64MB (0x4000000)", "rationale": "Safe ceiling for both applet and application mode", "phase": "01"},
+    {"decision": "Added -DUSE_STD_THREAD=ON to CMake flags", "rationale": "Root cause of instruction abort crash: borealis pthread task loop crashes at startup in NRO-under-hbloader context due to missing C++ runtime init. std::thread properly initializes runtime state for the new thread.", "phase": "01"},
+    {"decision": "Crash was at .rodata ELF offset 0x1f5148 with base 0x3282800000, confirmed via maxwell::CmdList::moveTo symbol match at 0x13d240", "rationale": "Instruction abort = CPU jumped to non-executable .rodata. Caused by corrupted function state in pthread created without proper C++ thread init.", "phase": "01"}
   ],
   "uncommitted_files": [
-    "source/main.cpp (debug log additions)",
-    "source/ui/file_browser.cpp (debug log additions)",
-    "dist/SwitchPalace.nro (rebuilt with new debug logging)"
+    "Makefile (added -DUSE_STD_THREAD=ON)",
+    "Dockerfile (added -DUSE_STD_THREAD=ON)"
   ],
-  "next_action": "User deploys dist/SwitchPalace.nro to Switch and reports back what the last line of sdmc:/switchpalace_debug.log is. Then diagnose and fix based on that. Remove all debug logging before final hw-verify.",
-  "context_notes": "Three successive crashes fixed: (1) nifm uninitialized -> IPC abort (2168-0001), (2) GLFW glfwInit fail in applet mode -> uncaught exception abort, (3) current: deko3D/borealis init still crashing but we do not yet know which sub-step. Second debug round now logs into FileBrowserView ctor. Debug log covers: 'main: entered', 'mode: APPLET/APPLICATION', 'borealis: calling Application::init', 'borealis: Application::init OK, calling createWindow', 'borealis: createWindow OK', 'cleanup: entering ContentManager cleanup', 'cleanup: ContentManager cleanup done', 'ui: constructing FileBrowserView', 'FileBrowserView: ctor start', 'FileBrowserView: base layout set', 'FileBrowserView: titleBar added'. Build is via Docker only."
+  "next_action": "Run 'make docker' to rebuild. Deploy dist/SwitchPalace.nro to Switch. Launch and check if crash is resolved. If crash persists, remove __nx_applet_type = AppletType_Default from source/main.cpp as secondary fix.",
+  "context_notes": "Crash diagnosis used addr2line on build/SwitchPalace.elf. NRO load base confirmed as 0x3282800000 via maxwell::CmdList::moveTo at ELF offset 0x13d240. Crash PC at ELF 0x1f5148 is in .rodata (non-executable). The borealis task loop thread (pthread, 132KB stack, Thread 01 in crash report) crashes due to C++ runtime not being properly initialized for the new thread in the NRO context. Three crash runs showed non-deterministic timing (runs 1&2 crashed before 'cleanup:', run 3 crashed at 'titleBar added') consistent with a background thread crashing asynchronously. Debug logging (debugLog/fbDebugLog) is still in source/main.cpp and source/ui/file_browser.cpp -- remove before final hw-verify pass."
 }
