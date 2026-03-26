@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-26T13:48:39.444Z",
+  "timestamp": "2026-03-26T14:44:57.873Z",
   "phase": "01",
   "phase_name": "foundation-install-pipeline",
   "phase_dir": ".planning/phases/01-foundation-install-pipeline",
@@ -11,36 +11,38 @@
   "completed_tasks": [
     {"id": 1, "name": "01-01 core install pipeline", "status": "done", "commit": "777a7a7"},
     {"id": 2, "name": "01-02 NSP/XCI installers", "status": "done", "commit": "f04cbf7"},
-    {"id": 3, "name": "01-03 UI views wired to install pipeline", "status": "done", "commit": "584174d"}
+    {"id": 3, "name": "01-03 UI views wired to install pipeline", "status": "done", "commit": "584174d"},
+    {"id": "fix-1", "name": "USE_STD_THREAD=ON pthread crash fix", "status": "done", "commit": "5f15763"},
+    {"id": "fix-2", "name": "ScrollingFrame.setPadding crash fix + icon + Docker rebuild", "status": "done", "commit": "uncommitted"}
   ],
   "remaining_tasks": [
-    {"id": 4, "name": "hw-verify: hardware testing checkpoint", "status": "blocked_needs_rebuild"}
+    {"id": 4, "name": "hw-verify: user testing now, awaiting results", "status": "in_progress"},
+    {"id": 5, "name": "Remove fbDebugLog/debugLog calls after confirmed working", "status": "not_started"},
+    {"id": 6, "name": "Write 01-03-SUMMARY.md to close Phase 01", "status": "not_started"}
   ],
-  "blockers": [
-    {
-      "description": "Root cause identified: borealis task loop pthread crashes on startup in NRO-under-hbloader context. Fix applied: USE_STD_THREAD=ON in Makefile + Dockerfile. Needs Docker rebuild and hardware re-test.",
-      "type": "technical",
-      "workaround": "Build with docker (make docker) then deploy and test"
-    }
-  ],
+  "blockers": [],
   "human_actions_pending": [
     {
-      "action": "Run 'make docker' to rebuild with USE_STD_THREAD=ON, copy dist/SwitchPalace.nro to Switch, and launch",
-      "context": "Fix changes borealis task loop thread from pthread_create (crashes in NRO context) to std::thread (properly initializes C++ runtime for new thread). If crash persists, also remove __nx_applet_type = AppletType_Default from source/main.cpp.",
+      "action": "Return with hardware test results (log files or pass report)",
+      "context": "User is actively testing dist/SwitchPalace.nro on Switch hardware right now",
       "blocking": true
     }
   ],
   "decisions": [
-    {"decision": "nifmInitialize added to switch_wrapper.c", "rationale": "borealis status bar calls nifm every frame; uninitialized = IPC abort", "phase": "01"},
+    {"decision": "nifmInitialize added to switch_wrapper.c", "rationale": "borealis status bar calls nifm every frame; TRUST-03 maintained", "phase": "01"},
     {"decision": "Switched to deko3D backend (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit fails in applet mode on fw 21.1.0", "phase": "01"},
     {"decision": "__nx_heap_size = 64MB (0x4000000)", "rationale": "Safe ceiling for both applet and application mode", "phase": "01"},
-    {"decision": "Added -DUSE_STD_THREAD=ON to CMake flags", "rationale": "Root cause of instruction abort crash: borealis pthread task loop crashes at startup in NRO-under-hbloader context due to missing C++ runtime init. std::thread properly initializes runtime state for the new thread.", "phase": "01"},
-    {"decision": "Crash was at .rodata ELF offset 0x1f5148 with base 0x3282800000, confirmed via maxwell::CmdList::moveTo symbol match at 0x13d240", "rationale": "Instruction abort = CPU jumped to non-executable .rodata. Caused by corrupted function state in pthread created without proper C++ thread init.", "phase": "01"}
+    {"decision": "USE_STD_THREAD=ON retained", "rationale": "Fixes borealis pthread task loop crash in NRO context (prior session)", "phase": "01"},
+    {"decision": "setPadding moved from m_scrollFrame to m_listContainer", "rationale": "borealis ScrollingFrame.setPadding calls fatal() -> throws std::logic_error -> uncaught = Instruction Abort on Switch", "phase": "01"},
+    {"decision": "resources/icon.jpg created (256x256 JPEG)", "rationale": "User requested generic icon; castle motif, Royal Sapphire palette; wired via --icon= in elf2nro", "phase": "01"},
+    {"decision": "hbmenu crash (folder_icon.bin null deref) is unrelated", "rationale": "hbmenu-internal bug, not caused by our NRO", "phase": "01"}
   ],
   "uncommitted_files": [
-    "Makefile (added -DUSE_STD_THREAD=ON)",
-    "Dockerfile (added -DUSE_STD_THREAD=ON)"
+    "source/ui/file_browser.cpp",
+    "CMakeLists.txt",
+    "resources/icon.jpg",
+    "dist/SwitchPalace.nro"
   ],
-  "next_action": "Run 'make docker' to rebuild. Deploy dist/SwitchPalace.nro to Switch. Launch and check if crash is resolved. If crash persists, remove __nx_applet_type = AppletType_Default from source/main.cpp as secondary fix.",
-  "context_notes": "Crash diagnosis used addr2line on build/SwitchPalace.elf. NRO load base confirmed as 0x3282800000 via maxwell::CmdList::moveTo at ELF offset 0x13d240. Crash PC at ELF 0x1f5148 is in .rodata (non-executable). The borealis task loop thread (pthread, 132KB stack, Thread 01 in crash report) crashes due to C++ runtime not being properly initialized for the new thread in the NRO context. Three crash runs showed non-deterministic timing (runs 1&2 crashed before 'cleanup:', run 3 crashed at 'titleBar added') consistent with a background thread crashing asynchronously. Debug logging (debugLog/fbDebugLog) is still in source/main.cpp and source/ui/file_browser.cpp -- remove before final hw-verify pass."
+  "next_action": "Review hardware test results from user. If pass: remove debug logging (fbDebugLog in file_browser.cpp, debugLog in main.cpp), write 01-03-SUMMARY.md. If crash: analyze new Atmosphere logs and fix.",
+  "context_notes": "Two crash rounds total. Round 1 (prior session): pthread task loop crash fixed with USE_STD_THREAD=ON. Round 2 (this session): ScrollingFrame.setPadding calls NO_PADDING macro -> fatal() -> std::logic_error. Debug logging (fbDebugLog/debugLog) still present in source files — remove after confirmed working on hardware."
 }

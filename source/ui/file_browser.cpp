@@ -54,35 +54,57 @@ FileBrowserView::FileBrowserView()
 
     // APPLET badge (top-right in title bar)
     setupAppletBadge();
+    fbDebugLog("FileBrowserView: appletMode check");
     if (m_isAppletMode)
     {
+        fbDebugLog("FileBrowserView: badge: new Box");
         auto* badge = new brls::Box();
+        fbDebugLog("FileBrowserView: badge: setBackgroundColor");
         badge->setBackgroundColor(nvgRGB(0xFF, 0xD6, 0x0A));
+        fbDebugLog("FileBrowserView: badge: setCornerRadius");
         badge->setCornerRadius(4.0f);
+        fbDebugLog("FileBrowserView: badge: setPadding");
         badge->setPadding(4.0f, 8.0f, 4.0f, 8.0f);
+        fbDebugLog("FileBrowserView: badge: setAlignItems");
         badge->setAlignItems(brls::AlignItems::CENTER);
+        fbDebugLog("FileBrowserView: badge: setJustifyContent");
         badge->setJustifyContent(brls::JustifyContent::CENTER);
 
+        fbDebugLog("FileBrowserView: badge: new Label");
         auto* badgeLabel = new brls::Label();
+        fbDebugLog("FileBrowserView: badge: setText");
         badgeLabel->setText("APPLET");
+        fbDebugLog("FileBrowserView: badge: setFontSize");
         badgeLabel->setFontSize(18.0f);
+        fbDebugLog("FileBrowserView: badge: setTextColor");
         badgeLabel->setTextColor(nvgRGB(0x1A, 0x1A, 0x1A));
+        fbDebugLog("FileBrowserView: badge: addView(badgeLabel)");
         badge->addView(badgeLabel);
-
+        fbDebugLog("FileBrowserView: badge: titleBar->addView(badge)");
         titleBar->addView(badge);
+        fbDebugLog("FileBrowserView: badge: done");
     }
 
     // Scrolling file list
+    fbDebugLog("FileBrowserView: new ScrollingFrame");
     m_scrollFrame = new brls::ScrollingFrame();
+    fbDebugLog("FileBrowserView: scrollFrame: setGrow");
     m_scrollFrame->setGrow(1.0f);
-    m_scrollFrame->setPadding(8.0f, 32.0f, 8.0f, 32.0f);
 
+    fbDebugLog("FileBrowserView: new listContainer");
     m_listContainer = new brls::Box(brls::Axis::COLUMN);
+    fbDebugLog("FileBrowserView: listContainer: setWidth");
     m_listContainer->setWidth(brls::View::AUTO);
+    fbDebugLog("FileBrowserView: listContainer: setPadding");
+    m_listContainer->setPadding(8.0f, 32.0f, 8.0f, 32.0f);
+    fbDebugLog("FileBrowserView: listContainer: setBackgroundColor");
     m_listContainer->setBackgroundColor(nvgRGB(0x24, 0x24, 0x24));
+    fbDebugLog("FileBrowserView: listContainer: setCornerRadius");
     m_listContainer->setCornerRadius(8.0f);
 
+    fbDebugLog("FileBrowserView: scrollFrame->addView(listContainer)");
     m_scrollFrame->addView(m_listContainer);
+    fbDebugLog("FileBrowserView: addView(scrollFrame)");
     addView(m_scrollFrame);
     fbDebugLog("FileBrowserView: scrollFrame added");
 
