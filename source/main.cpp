@@ -10,11 +10,12 @@
 #include "ui/summary_view.hpp"
 
 #ifdef __SWITCH__
-// 128MB heap: safe ceiling for both applet mode (hbloader limit ~128MB)
-// and application mode. Sufficient for UI + NCA streaming buffers.
+// 64MB heap: safe for both applet mode (hbloader provides ~128MB but 64MB leaves
+// headroom for hbloader overhead + system reserves) and application mode.
+// NCA streaming is chunk-based so we do not need the full 128MB ceiling.
 extern "C" {
     u32 __nx_applet_type = AppletType_Default;
-    u32 __nx_heap_size = 0x8000000; // 128MB
+    u32 __nx_heap_size = 0x4000000; // 64MB
 }
 #endif
 
