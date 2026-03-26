@@ -45,6 +45,16 @@ private:
     std::mutex m_progressMutex;
     install::InstallProgress m_latestProgress;
     bool m_installComplete = false;
+
+    // UI update task (runs on main thread)
+    class UIUpdateTask : public brls::RepeatingTask {
+    public:
+        UIUpdateTask(InstallProgressView* view);
+        void run() override;
+    private:
+        InstallProgressView* m_view;
+    };
+    UIUpdateTask* m_updateTask = nullptr;
 };
 
 } // namespace switchpalace::ui

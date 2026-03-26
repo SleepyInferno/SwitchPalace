@@ -126,15 +126,38 @@ InstallProgressView::InstallProgressView(
 
     // Start the install thread
     startInstallThread();
+
+    // Start UI update task (every 100ms on main thread)
+    m_updateTask = new UIUpdateTask(this);
+    m_updateTask->start();
 }
 
 InstallProgressView::~InstallProgressView()
 {
+    if (m_updateTask)
+    {
+        m_updateTask->stop();
+        delete m_updateTask;
+        m_updateTask = nullptr;
+    }
+
     if (m_installThread.joinable())
     {
         m_cancel = true;
         m_installThread.join();
     }
+}
+
+// UIUpdateTask implementation
+InstallProgressView::UIUpdateTask::UIUpdateTask(InstallProgressView* view)
+    : brls::RepeatingTask(100), m_view(view)
+{
+}
+
+void InstallProgressView::UIUpdateTask::run()
+{
+    if (m_view)
+        m_view->updateUI();
 }
 
 void InstallProgressView::startInstallThread()
