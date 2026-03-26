@@ -5,7 +5,7 @@ FROM devkitpro/devkita64:latest
 RUN dkp-pacman -Syu --noconfirm && \
     dkp-pacman -S --noconfirm \
         switch-dev \
-        switch-zstd \
+        switch-libzstd \
         switch-zlib \
         switch-mbedtls \
         switch-cmake

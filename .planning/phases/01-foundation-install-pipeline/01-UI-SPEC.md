@@ -48,12 +48,12 @@ Exceptions: Controller touch targets minimum 44px height for all focusable list 
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Screen Title | 34sp | 600 (Semibold) | 1.2 |
+| Screen Title | 28sp | 600 (Semibold) | 1.2 |
 | Section Header | 22sp | 600 (Semibold) | 1.2 |
-| Body / List Item | 17sp | 400 (Regular) | 1.5 |
-| Caption / Metadata / Badge / Label | 13sp | 400 (Regular) or 600 (Semibold) | 1.4 |
+| Body / List Item | 20sp | 400 (Regular) | 1.5 |
+| Caption / Metadata / Badge / Label | 18sp | 400 (Regular) or 600 (Semibold) | 1.4 |
 
-Two-weight system: 400 Regular and 600 Semibold only. Caption/Metadata uses 13sp/400; Badge/Label uses 13sp/600. Same size, weight differentiates role.
+Sizes are borealis framework defaults (AppletFrame title 28sp, sidebar 22sp, label 20sp, header/button 18sp). Two-weight system: 400 Regular and 600 Semibold only. Caption/Metadata uses 18sp/400; Badge/Label uses 18sp/600.
 
 Note: "sp" is borealis scale-independent pixels. Use borealis framework font at all sizes; no custom fonts.
 
@@ -86,34 +86,34 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 
 | Element | Visual Specification |
 |---------|---------------------|
-| App bar | Screen title "SwitchPalace" at 34sp/600, left-aligned, `#FFFFFF` on `#1A1A1A` bg |
-| Applet badge | Top-right corner, `#FFD60A` bg / `#1A1A1A` text, 13sp/600 uppercase "APPLET", 4px radius, 4px internal padding, persistent and always visible when in applet mode |
+| App bar | Screen title "SwitchPalace" at 28sp/600, left-aligned, `#FFFFFF` on `#1A1A1A` bg |
+| Applet badge | Top-right corner, `#FFD60A` bg / `#1A1A1A` text, 18sp/600 uppercase "APPLET", 4px radius, 4px internal padding, persistent and always visible when in applet mode |
 | File list | Scrollable vertical list on `#242424` surface panel, 8px corner radius |
-| File list item | 17sp/400 filename in `#FFFFFF`, 13sp/400 file size + format badge in `#ADADAD`, 16px vertical padding, 16px horizontal padding, full-width |
+| File list item | 20sp/400 filename in `#FFFFFF`, 18sp/400 file size + format badge in `#ADADAD`, 16px vertical padding, 16px horizontal padding, full-width |
 | File list item (selected) | `#3D9CF0` left border 3px + subtle `#3D9CF0` at 8% opacity background tint |
-| File list item (disabled, applet mode) | Filename in `#5A5A5A`, suffix label "Requires app mode" in `#5A5A5A` at 13sp/400, no focus ring on controller nav |
+| File list item (disabled, applet mode) | Filename in `#5A5A5A`, suffix label "Requires app mode" in `#5A5A5A` at 18sp/400, no focus ring on controller nav |
 | Multi-select indicator | Checkbox or filled circle left of filename, `#3D9CF0` when checked, `#3A3A3A` outline when unchecked |
 | Empty state | Centered vertically in list area |
 | Action bar | Bottom of screen, `#2E2E2E` bg, contains destination selector + "Install" button |
 | Destination selector | Two-option toggle: "SD Card" / "NAND", `#3D9CF0` fill on selected option, 6px radius |
-| Install button | `#3D9CF0` bg, `#FFFFFF` text at 17sp/600, 6px radius, 48px height, right-aligned in action bar |
+| Install button | `#3D9CF0` bg, `#FFFFFF` text at 20sp/600, 6px radius, 48px height, right-aligned in action bar |
 | Focus ring | 2px solid `#FFFFFF`, 2px offset from element edge (all focusable elements) |
 
 ### Screen 2: Install Progress
 
 | Element | Visual Specification |
 |---------|---------------------|
-| NAND warning banner | Full-width, `#FF9F0A` bg, `#1A1A1A` text at 13sp/600, appears only when destination is NAND, not dismissible, text: "Installing to NAND system memory" |
+| NAND warning banner | Full-width, `#FF9F0A` bg, `#1A1A1A` text at 18sp/600, appears only when destination is NAND, not dismissible, text: "Installing to NAND system memory" |
 | Overall progress bar | Full-width minus 32px margins, 8px height, 4px radius, `#3D9CF0` fill, `#3A3A3A` unfilled track |
 | Progress percentage | Right-aligned above progress bar, 22sp/600 `#3D9CF0` text |
-| Current filename | Below progress bar, 17sp/400 `#FFFFFF`, left-aligned, truncated with ellipsis if too long |
-| Speed readout | Below filename, 13sp/400 monospaced `#ADADAD`, format: "{speed} MB/s" |
-| ETA readout | Same line as speed, right-aligned, 13sp/400 monospaced `#ADADAD`, format: "ETA {time}" |
+| Current filename | Below progress bar, 20sp/400 `#FFFFFF`, left-aligned, truncated with ellipsis if too long |
+| Speed readout | Below filename, 18sp/400 monospaced `#ADADAD`, format: "{speed} MB/s" |
+| ETA readout | Same line as speed, right-aligned, 18sp/400 monospaced `#ADADAD`, format: "ETA {time}" |
 | Per-file status list | Scrollable list below speed/ETA showing completed files |
-| Per-file status item (pass) | `#30D158` checkmark icon + filename at 17sp/400 `#FFFFFF` |
-| Per-file status item (fail) | `#FF453A` X icon + filename at 17sp/400 `#FFFFFF` + error reason at 13sp/400 `#FF453A` |
-| Per-file status item (in progress) | Spinner/animated indicator + filename at 17sp/400 `#ADADAD` |
-| Cancel button | Bottom-right, outlined style (no fill), `#FF453A` border + text at 17sp/600, 6px radius |
+| Per-file status item (pass) | `#30D158` checkmark icon + filename at 20sp/400 `#FFFFFF` |
+| Per-file status item (fail) | `#FF453A` X icon + filename at 20sp/400 `#FFFFFF` + error reason at 18sp/400 `#FF453A` |
+| Per-file status item (in progress) | Spinner/animated indicator + filename at 20sp/400 `#ADADAD` |
+| Cancel button | Bottom-right, outlined style (no fill), `#FF453A` border + text at 20sp/600, 6px radius |
 
 ### Screen 3: Cancel Confirmation Dialog
 
@@ -122,21 +122,21 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 | Dialog overlay | Full-screen `#000000` at 50% opacity |
 | Dialog card | Centered, `#2E2E2E` bg, 12px radius, 24px internal padding, max-width 480px |
 | Dialog title | 22sp/600 `#FFFFFF`, text: "Cancel Installation?" |
-| Dialog body | 17sp/400 `#ADADAD`, text: see Copywriting Contract |
-| Confirm cancel button | `#FF453A` bg, `#FFFFFF` text at 17sp/600, 6px radius, label: "Cancel Install" |
-| Continue button | `#3D9CF0` bg, `#FFFFFF` text at 17sp/600, 6px radius, label: "Continue Installing" |
+| Dialog body | 20sp/400 `#ADADAD`, text: see Copywriting Contract |
+| Confirm cancel button | `#FF453A` bg, `#FFFFFF` text at 20sp/600, 6px radius, label: "Cancel Install" |
+| Continue button | `#3D9CF0` bg, `#FFFFFF` text at 20sp/600, 6px radius, label: "Continue Installing" |
 | Button layout | Horizontal, 16px gap, continue button focused by default |
 
 ### Screen 4: Post-Install Summary
 
 | Element | Visual Specification |
 |---------|---------------------|
-| Summary title | 34sp/600 `#FFFFFF`, text: "Installation Complete" or "Installation Finished" (if any failures) |
+| Summary title | 28sp/600 `#FFFFFF`, text: "Installation Complete" or "Installation Finished" (if any failures) |
 | Result list | Full list of all files with pass/fail status, same styling as per-file status items on progress screen |
-| Pass row | `#30D158` checkmark + filename + "Verified" label at 13sp/400 `#30D158` |
-| Fail row | `#FF453A` X + filename + error reason at 13sp/400 `#FF453A` |
-| Overall summary line | 17sp/600 `#FFFFFF`, e.g. "3 of 4 installed successfully" |
-| Dismiss instruction | Bottom of screen, 13sp/400 `#ADADAD`, text: "Press B to return to file browser" |
+| Pass row | `#30D158` checkmark + filename + "Verified" label at 18sp/400 `#30D158` |
+| Fail row | `#FF453A` X + filename + error reason at 18sp/400 `#FF453A` |
+| Overall summary line | 20sp/600 `#FFFFFF`, e.g. "3 of 4 installed successfully" |
+| Dismiss instruction | Bottom of screen, 18sp/400 `#ADADAD`, text: "Press B to return to file browser" |
 
 ### Screen 5: Conflict Error Dialog
 
@@ -144,7 +144,7 @@ Accent reserved for: progress bar fill, selected/focused list item background, p
 |---------|---------------------|
 | Dialog card | Same as cancel dialog styling |
 | Dialog title | 22sp/600 `#FFFFFF`, text: "Already Installed" |
-| Dialog body | 17sp/400 `#ADADAD`, text: see Copywriting Contract |
+| Dialog body | 20sp/400 `#ADADAD`, text: see Copywriting Contract |
 | Dismiss button | `#3D9CF0` bg, `#FFFFFF` text, label: "Dismiss" |
 
 ---

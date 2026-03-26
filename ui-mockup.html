@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwitchPalace — UI Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    gap: 24px;
+  }
+
+  .nav {
+    display: flex;
+    gap: 8px;
+  }
+  .nav button {
+    background: #2a2a2a;
+    color: #aaa;
+    border: 1px solid #3a3a3a;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .nav button.active, .nav button:hover {
+    background: #3D9CF0;
+    color: #fff;
+    border-color: #3D9CF0;
+  }
+
+  .label {
+    color: #555;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-left: calc(50% - 640px);
+  }
+
+  /* Switch screen frame */
+  .screen-wrap {
+    position: relative;
+    width: 1280px;
+    max-width: 100%;
+    aspect-ratio: 16/9;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: #1A1A1A;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+
+  /* ─── Shared ─── */
+  .applet-badge {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    background: #FFD60A;
+    color: #1A1A1A;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 10;
+  }
+
+  /* ─── Screen 1: File Browser ─── */
+  #s1 {
+    display: flex;
+  }
+  .app-bar {
+    height: 64px;
+    background: #1A1A1A;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    border-bottom: 1px solid #2a2a2a;
+    flex-shrink: 0;
+  }
+  .app-bar-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .file-list-area {
+    flex: 1;
+    padding: 16px 32px;
+    overflow: hidden;
+  }
+  .file-panel {
+    background: #242424;
+    border-radius: 8px;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .file-panel-header {
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid #3A3A3A;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ADADAD;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .file-list {
+    flex: 1;
+    overflow: hidden;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #2E2E2E;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .file-item:hover {
+    background: rgba(61,156,240,0.06);
+  }
+  .file-item.selected {
+    border-left: 3px solid #3D9CF0;
+    background: rgba(61,156,240,0.08);
+    padding-left: 13px;
+  }
+  .file-item.focused {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+  }
+  .file-item.disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #3A3A3A;
+    flex-shrink: 0;
+  }
+  .checkbox.checked {
+    background: #3D9CF0;
+    border-color: #3D9CF0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .checkbox.checked::after {
+    content: '';
+    width: 8px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+
+  .file-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .file-name {
+    font-size: 20px;
+    font-weight: 400;
+    color: #FFFFFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-name.dim { color: #5A5A5A; }
+  .file-meta {
+    font-size: 18px;
+    font-weight: 400;
+    color: #ADADAD;
+    margin-top: 2px;
+  }
+  .file-meta .dim-label {
+    color: #5A5A5A;
+    margin-left: 8px;
+  }
+
+  .action-bar {
+    height: 72px;
+    background: #2E2E2E;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    gap: 16px;
+    border-top: 1px solid #3A3A3A;
+    flex-shrink: 0;
+  }
+  .dest-toggle {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #3A3A3A;
+  }
+  .dest-option {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #ADADAD;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dest-option.active {
+    background: #3D9CF0;
+    color: #fff;
+    font-weight: 600;
+  }
+  .spacer { flex: 1; }
+  .count-badge {
+    font-size: 18px;
+    color: #ADADAD;
+  }
+  .install-btn {
+    background: #3D9CF0;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    height: 48px;
+    padding: 0 28px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .install-btn:hover { background: #5DB0FF; }
+
+  /* ─── Screen 2: Install Progress ─── */
+  #s2 { display: none; }
+
+  .progress-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  .nand-banner {
+    background: #FF9F0A;
+    color: #1A1A1A;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 10px 32px;
+    flex-shrink: 0;
+  }
+  .progress-main {
+    flex: 1;
+    padding: 24px 32px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .progress-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .progress-label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #ADADAD;
+  }
+  .progress-pct {
+    font-size: 22px;
+    font-weight: 600;
+    color: #3D9CF0;
+  }
+  .progress-track {
+    height: 8px;
+    background: #3A3A3A;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #3D9CF0;
+    border-radius: 4px;
+    width: 63%;
+    transition: width 0.3s;
+  }
+  .current-file {
+    font-size: 20px;
+    font-weight: 400;
+    color: #FFFFFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  .readout-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 400;
+    color: #ADADAD;
+    font-family: "SF Mono", "Fira Code", monospace;
+    margin-bottom: 16px;
+  }
+  .status-list {
+    flex: 1;
+    overflow: hidden;
+    background: #242424;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 0;
+  }
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 20px;
+    font-weight: 400;
+  }
+  .status-item.pass { color: #FFFFFF; }
+  .status-item.fail { color: #FFFFFF; }
+  .status-item.inprog { color: #ADADAD; }
+  .icon-pass { color: #30D158; font-size: 18px; }
+  .icon-fail { color: #FF453A; font-size: 18px; }
+  .icon-spin { color: #3D9CF0; font-size: 16px; }
+  .err-reason { font-size: 18px; color: #FF453A; margin-left: 4px; }
+
+  .progress-action-bar {
+    height: 72px;
+    background: #2E2E2E;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 32px;
+    border-top: 1px solid #3A3A3A;
+    flex-shrink: 0;
+  }
+  .cancel-btn {
+    background: transparent;
+    border: 2px solid #FF453A;
+    color: #FF453A;
+    font-size: 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    height: 48px;
+    padding: 0 24px;
+    cursor: pointer;
+  }
+
+  /* ─── Screen 3: Cancel Dialog ─── */
+  #s3 { display: none; }
+  .dialog-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+  }
+  .dialog-card {
+    background: #2E2E2E;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 520px;
+    width: 90%;
+  }
+  .dialog-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+  }
+  .dialog-body {
+    font-size: 20px;
+    font-weight: 400;
+    color: #ADADAD;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .dialog-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+  }
+  .btn-danger {
+    background: #FF453A;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    height: 48px;
+    padding: 0 24px;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: #3D9CF0;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    height: 48px;
+    padding: 0 24px;
+    cursor: pointer;
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  /* ─── Screen 4: Summary ─── */
+  #s4 { display: none; }
+  .summary-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 32px 0;
+    overflow: hidden;
+  }
+  .summary-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+  }
+  .summary-line {
+    font-size: 20px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 16px;
+  }
+  .summary-list {
+    flex: 1;
+    background: #242424;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    padding: 8px 0;
+  }
+  .summary-footer {
+    background: #2E2E2E;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #ADADAD;
+    text-align: center;
+    border-top: 1px solid #3A3A3A;
+    flex-shrink: 0;
+  }
+  .sum-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    font-size: 20px;
+    font-weight: 400;
+    color: #FFFFFF;
+    border-bottom: 1px solid #2E2E2E;
+  }
+  .sum-item-right {
+    margin-left: auto;
+    font-size: 18px;
+  }
+  .sum-item-right.pass { color: #30D158; }
+  .sum-item-right.fail { color: #FF453A; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <button class="active" onclick="show('s1', this)">Screen 1 — File Browser</button>
+  <button onclick="show('s2', this)">Screen 2 — Install Progress</button>
+  <button onclick="show('s3', this)">Screen 3 — Cancel Dialog</button>
+  <button onclick="show('s4', this)">Screen 4 — Summary</button>
+</div>
+
+<div class="screen-wrap">
+
+  <!-- SCREEN 1: File Browser -->
+  <div class="screen active" id="s1">
+    <div class="applet-badge">APPLET</div>
+
+    <div class="app-bar">
+      <span class="app-bar-title">SwitchPalace</span>
+    </div>
+
+    <div class="file-list-area">
+      <div class="file-panel">
+        <div class="file-panel-header">SD Card — /</div>
+        <div class="file-list">
+
+          <div class="file-item selected focused">
+            <div class="checkbox checked"></div>
+            <div class="file-info">
+              <div class="file-name">The Legend of Zelda Tears of the Kingdom [0100F2C0115B6000].nsp</div>
+              <div class="file-meta">18.2 GB &nbsp;·&nbsp; NSP</div>
+            </div>
+          </div>
+
+          <div class="file-item selected">
+            <div class="checkbox checked"></div>
+            <div class="file-info">
+              <div class="file-name">Super Mario Bros. Wonder [010015100B514000].nsp</div>
+              <div class="file-meta">6.4 GB &nbsp;·&nbsp; NSP</div>
+            </div>
+          </div>
+
+          <div class="file-item">
+            <div class="checkbox"></div>
+            <div class="file-info">
+              <div class="file-name">Metroid Dread [010093801237C000].xci</div>
+              <div class="file-meta">6.8 GB &nbsp;·&nbsp; XCI</div>
+            </div>
+          </div>
+
+          <div class="file-item">
+            <div class="checkbox"></div>
+            <div class="file-info">
+              <div class="file-name">Hollow Knight Silksong [01007A9005B64000].nsz</div>
+              <div class="file-meta">3.1 GB &nbsp;·&nbsp; NSZ (compressed)</div>
+            </div>
+          </div>
+
+          <div class="file-item disabled">
+            <div class="checkbox"></div>
+            <div class="file-info">
+              <div class="file-name dim">Bayonetta 3 [01004A4010FC0000].xcz</div>
+              <div class="file-meta">12.7 GB &nbsp;·&nbsp; XCZ <span class="dim-label">Requires app mode</span></div>
+            </div>
+          </div>
+
+          <div class="file-item">
+            <div class="checkbox"></div>
+            <div class="file-info">
+              <div class="file-name">Pikmin 4 [0100B7C00933A000].nsp</div>
+              <div class="file-meta">6.2 GB &nbsp;·&nbsp; NSP</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="dest-toggle">
+        <div class="dest-option active">SD Card</div>
+        <div class="dest-option">NAND</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="count-badge">2 selected</div>
+      <button class="install-btn">Install Selected</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: Install Progress -->
+  <div class="screen" id="s2">
+    <div class="applet-badge">APPLET</div>
+
+    <div class="app-bar">
+      <span class="app-bar-title">SwitchPalace</span>
+    </div>
+
+    <div class="progress-screen">
+      <div class="nand-banner">Installing to NAND system memory</div>
+
+      <div class="progress-main">
+        <div class="progress-header">
+          <span class="progress-label">Installing 1 of 2</span>
+          <span class="progress-pct">63%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="current-file">The Legend of Zelda Tears of the Kingdom [0100F2C0115B6000].nsp</div>
+        <div class="readout-row">
+          <span>247.3 MB/s</span>
+          <span>ETA 1m 02s</span>
+        </div>
+
+        <div class="status-list">
+          <div class="status-item inprog">
+            <span class="icon-spin">◆</span>
+            The Legend of Zelda Tears of the Kingdom [0100F2C0115B6000].nsp
+          </div>
+          <div class="status-item pass">
+            <span class="icon-pass">✓</span>
+            Super Mario Bros. Wonder [010015100B514000].nsp
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-action-bar">
+        <button class="cancel-btn">Cancel Install</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Cancel Dialog -->
+  <div class="screen" id="s3">
+    <!-- progress screen behind dialog -->
+    <div class="app-bar">
+      <span class="app-bar-title">SwitchPalace</span>
+    </div>
+    <div class="progress-screen" style="opacity:0.35;pointer-events:none">
+      <div class="progress-main">
+        <div class="progress-header">
+          <span class="progress-label">Installing 1 of 2</span>
+          <span class="progress-pct">63%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+        <div class="current-file">The Legend of Zelda Tears of the Kingdom [0100F2C0115B6000].nsp</div>
+        <div class="readout-row"><span>247.3 MB/s</span><span>ETA 1m 02s</span></div>
+        <div class="status-list"></div>
+      </div>
+    </div>
+
+    <div class="dialog-backdrop">
+      <div class="dialog-card">
+        <div class="dialog-title">Cancel Installation?</div>
+        <div class="dialog-body">
+          The current install will be stopped and all progress rolled back.<br>No partial files will remain on your system.
+        </div>
+        <div class="dialog-buttons">
+          <button class="btn-danger">Cancel Install</button>
+          <button class="btn-primary">Continue Installing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: Summary -->
+  <div class="screen" id="s4">
+    <div class="app-bar">
+      <span class="app-bar-title">SwitchPalace</span>
+    </div>
+
+    <div class="summary-screen">
+      <div class="summary-title">Installation Finished</div>
+      <div class="summary-line">1 of 2 installed successfully</div>
+
+      <div class="summary-list">
+        <div class="sum-item">
+          <span class="icon-pass">✓</span>
+          Super Mario Bros. Wonder [010015100B514000].nsp
+          <span class="sum-item-right pass">Verified</span>
+        </div>
+        <div class="sum-item">
+          <span class="icon-fail" style="color:#FF453A">✗</span>
+          The Legend of Zelda Tears of the Kingdom [0100F2C0115B6000].nsp
+          <span class="sum-item-right fail">Hash verification failed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-footer">Press B to return to file browser</div>
+  </div>
+
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

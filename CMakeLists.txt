@@ -62,8 +62,8 @@ if (PLATFORM_SWITCH)
     endif ()
     add_custom_target(${PROJECT_NAME}.nro DEPENDS ${PROJECT_NAME}
         COMMAND ${NX_NACPTOOL_EXE} --create "SwitchPalace" "${PROJECT_AUTHOR}" "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_ALTER}" ${PROJECT_NAME}.nacp --titleid=${PROJECT_TITLEID}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${BOREALIS_LIBRARY}/../resources ${CMAKE_BINARY_DIR}/resources
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_RESOURCES} ${CMAKE_BINARY_DIR}/resources
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/resources/font
         COMMAND ${NX_ELF2NRO_EXE} ${PROJECT_NAME}.elf ${PROJECT_NAME}.nro --nacp=${PROJECT_NAME}.nacp --romfsdir=${CMAKE_BINARY_DIR}/resources
     )
 elseif (PLATFORM_DESKTOP)
@@ -79,7 +79,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include ${APP_PLATFORM_INCLUD
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections ${APP_PLATFORM_OPTION})
 
 if (PLATFORM_SWITCH)
-    target_link_libraries(${PROJECT_NAME} PRIVATE borealis -lzstd ${APP_PLATFORM_LIB})
+    target_link_libraries(${PROJECT_NAME} PRIVATE borealis -lzstd -lmbedcrypto ${APP_PLATFORM_LIB})
 else ()
     target_link_libraries(${PROJECT_NAME} PRIVATE borealis ${APP_PLATFORM_LIB})
 endif ()

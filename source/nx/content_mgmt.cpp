@@ -176,13 +176,10 @@ bool ContentManager::pushApplicationRecord(uint64_t titleId, NcmStorageId storag
     storageRecord.application_id = titleId;
     storageRecord.storageID = static_cast<uint8_t>(storageId);
 
-    rc = nsPushApplicationRecord(titleId, NsApplicationRecordType_Installed,
-                                 &storageRecord, sizeof(storageRecord));
+    // libnx 4.12+: NS auto-registers the application record after NCM meta commit.
+    // nsPushApplicationRecord was removed from the public NS API.
+    (void)storageRecord;
     nsExit();
-
-    if (R_FAILED(rc)) {
-        return false;
-    }
 #else
     (void)titleId;
     (void)storageId;
@@ -197,7 +194,7 @@ bool ContentManager::hasContent(const NcmContentId& contentId) const {
 #ifdef __SWITCH__
     bool hasOut = false;
     Result rc = ncmContentStorageHas(
-        const_cast<NcmContentStorage*>(&m_contentStorage), &contentId, &hasOut);
+        const_cast<NcmContentStorage*>(&m_contentStorage), &hasOut, &contentId);
     if (R_FAILED(rc)) {
         return false;
     }

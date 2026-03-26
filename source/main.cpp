@@ -10,13 +10,11 @@
 #include "ui/summary_view.hpp"
 
 #ifdef __SWITCH__
-// Heap size override for application mode: 1GB
-// In applet mode the system grants a smaller heap automatically.
-// __nx_heap_size is a compile-time hint; actual available memory
-// may be less in applet mode.
+// 128MB heap: safe ceiling for both applet mode (hbloader limit ~128MB)
+// and application mode. Sufficient for UI + NCA streaming buffers.
 extern "C" {
     u32 __nx_applet_type = AppletType_Default;
-    u32 __nx_heap_size = 0x40000000; // 1GB
+    u32 __nx_heap_size = 0x8000000; // 128MB
 }
 #endif
 
@@ -43,23 +41,24 @@ int main(int argc, char* argv[])
     brls::Logger::debug("SwitchPalace starting in {} mode",
                         switchpalace::nx::getAppletModeString());
 
-    // Clean up stale placeholders from prior crashed runs (INST-06 safety net)
-    {
-        switchpalace::nx::ContentManager cm;
-        cm.cleanupStalePlaceholders();
-    }
-
     // Initialize borealis
     // TRUST-03: No network service initialization at startup.
     // Network is only initialized on-demand when user triggers network install.
     // TRUST-03 verified: no network service init calls in this file.
-    if (!brls::Application::init("SwitchPalace"))
+    if (!brls::Application::init())
     {
         brls::Logger::error("Failed to initialize borealis application");
         return EXIT_FAILURE;
     }
 
     brls::Application::createWindow("SwitchPalace");
+
+    // Clean up stale placeholders from prior crashed runs (INST-06 safety net)
+    // Done after borealis init so NCM is accessed with display/services ready.
+    {
+        switchpalace::nx::ContentManager cm;
+        cm.cleanupStalePlaceholders();
+    }
 
     // Navigation flow:
     //   App starts -> FileBrowserView (root)

@@ -2,6 +2,29 @@
 
 #ifdef __SWITCH__
 #include <switch.h>
+
+// libnx 4.x removed the public ES service API.
+// Implement ticket import via direct IPC (command 1 = ImportTicket).
+namespace {
+    static Result esOpenService(Service* out) {
+        return smGetService(out, "es");
+    }
+
+    static Result esImportTicketIpc(Service* srv,
+                                    const void* tikBuf, size_t tikSize,
+                                    const void* certBuf, size_t certSize) {
+        return serviceDispatch(srv, 1,
+            .buffer_attrs = {
+                SfBufferAttr_HipcMapAlias | SfBufferAttr_In,
+                SfBufferAttr_HipcMapAlias | SfBufferAttr_In,
+            },
+            .buffers = {
+                { tikBuf, tikSize },
+                { certBuf, certSize },
+            },
+        );
+    }
+} // anonymous namespace
 #endif
 
 namespace switchpalace::nx {
@@ -13,13 +36,14 @@ bool TicketManager::importTicket(const uint8_t* tikData, size_t tikSize,
     }
 
 #ifdef __SWITCH__
-    Result rc = esInitialize();
+    Service esSrv = {};
+    Result rc = esOpenService(&esSrv);
     if (R_FAILED(rc)) {
         return false;
     }
 
-    rc = esImportTicket(tikData, tikSize, certData, certSize);
-    esExit();
+    rc = esImportTicketIpc(&esSrv, tikData, tikSize, certData, certSize);
+    serviceClose(&esSrv);
 
     if (R_FAILED(rc)) {
         return false;

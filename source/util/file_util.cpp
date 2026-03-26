@@ -41,7 +41,10 @@ bool isInstallableExtension(const std::string& ext)
     return ext == "nsp" || ext == "xci" || ext == "nsz" || ext == "xcz";
 }
 
-void scanDirectory(const std::string& dirPath, std::vector<FileEntry>& results)
+// Flat (non-recursive) scan of a single directory.
+// Recursive scanning of sdmc:/ causes stack overflows traversing
+// Nintendo's deep game data trees (sdmc:/Nintendo/Contents/...).
+void scanDirectoryFlat(const std::string& dirPath, std::vector<FileEntry>& results)
 {
     DIR* dir = opendir(dirPath.c_str());
     if (!dir)
@@ -63,11 +66,7 @@ void scanDirectory(const std::string& dirPath, std::vector<FileEntry>& results)
         if (stat(fullPath.c_str(), &st) != 0)
             continue;
 
-        if (S_ISDIR(st.st_mode))
-        {
-            scanDirectory(fullPath, results);
-        }
-        else if (S_ISREG(st.st_mode))
+        if (S_ISREG(st.st_mode))
         {
             std::string ext = getExtension(name);
             if (isInstallableExtension(ext))
@@ -92,10 +91,21 @@ std::vector<FileEntry> scanForInstallableFiles()
     std::vector<FileEntry> results;
 
 #ifdef __SWITCH__
-    scanDirectory("sdmc:/", results);
+    // Scan common install directories flat (no recursion).
+    // sdmc:/NSP and sdmc:/ root are the conventional locations.
+    // Never recurse into sdmc:/Nintendo — it causes stack overflow.
+    static const char* kScanDirs[] = {
+        "sdmc:/",
+        "sdmc:/NSP",
+        "sdmc:/NSPs",
+        "sdmc:/XCI",
+        "sdmc:/switch",
+    };
+    for (const char* d : kScanDirs)
+        scanDirectoryFlat(d, results);
 #else
     // Host build: scan current directory for testing
-    scanDirectory(".", results);
+    scanDirectoryFlat(".", results);
 #endif
 
     // Sort alphabetically by filename (case-insensitive)
