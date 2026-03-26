@@ -87,22 +87,29 @@ int main(int argc, char* argv[])
 
     // Clean up stale placeholders from prior crashed runs (INST-06 safety net)
     // Done after borealis init so NCM is accessed with display/services ready.
+    debugLog("cleanup: entering ContentManager cleanup");
     {
         switchpalace::nx::ContentManager cm;
         cm.cleanupStalePlaceholders();
     }
+    debugLog("cleanup: ContentManager cleanup done");
 
     // Navigation flow:
     //   App starts -> FileBrowserView (root)
     //   User selects files + presses Install -> push InstallProgressView
     //   Install completes -> push SummaryView (replace InstallProgressView)
     //   User presses B on SummaryView -> pop back to FileBrowserView
+    debugLog("ui: constructing FileBrowserView");
     auto* fileBrowser = new switchpalace::ui::FileBrowserView();
+    debugLog("ui: FileBrowserView constructed");
+    debugLog("ui: calling pushActivity");
     brls::Application::pushActivity(new brls::Activity(fileBrowser));
+    debugLog("ui: pushActivity done, entering mainLoop");
 
     // Main loop
     while (brls::Application::mainLoop())
         ;
+    debugLog("main: mainLoop exited cleanly");
 
     return EXIT_SUCCESS;
 }

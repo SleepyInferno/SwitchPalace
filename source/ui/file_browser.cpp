@@ -1,4 +1,5 @@
 #include "ui/file_browser.hpp"
+#include <cstdio>
 #include "ui/install_view.hpp"
 #include "ui/dialogs.hpp"
 #include "nx/applet.hpp"
@@ -11,8 +12,19 @@
 
 namespace switchpalace::ui {
 
+static void fbDebugLog(const char* msg)
+{
+#ifdef __SWITCH__
+    FILE* f = fopen("sdmc:/switchpalace_debug.log", "a");
+    if (f) { fprintf(f, "%s\n", msg); fclose(f); }
+#else
+    (void)msg;
+#endif
+}
+
 FileBrowserView::FileBrowserView()
 {
+    fbDebugLog("FileBrowserView: ctor start");
     setAxis(brls::Axis::COLUMN);
     setWidth(brls::View::AUTO);
     setHeight(brls::View::AUTO);
@@ -20,6 +32,7 @@ FileBrowserView::FileBrowserView()
     setBackgroundColor(nvgRGB(0x1A, 0x1A, 0x1A));
 
     m_isAppletMode = switchpalace::nx::isAppletMode();
+    fbDebugLog("FileBrowserView: base layout set");
 
     // Title bar
     auto* titleBar = new brls::Box(brls::Axis::ROW);
@@ -37,6 +50,7 @@ FileBrowserView::FileBrowserView()
     titleBar->addView(titleLabel);
 
     addView(titleBar);
+    fbDebugLog("FileBrowserView: titleBar added");
 
     // APPLET badge (top-right in title bar)
     setupAppletBadge();
@@ -70,13 +84,17 @@ FileBrowserView::FileBrowserView()
 
     m_scrollFrame->addView(m_listContainer);
     addView(m_scrollFrame);
+    fbDebugLog("FileBrowserView: scrollFrame added");
 
     // Action bar at bottom
     setupActionBar();
     addView(m_actionBar);
+    fbDebugLog("FileBrowserView: actionBar added");
 
     // Populate file list
+    fbDebugLog("FileBrowserView: calling refreshFileList");
     refreshFileList();
+    fbDebugLog("FileBrowserView: refreshFileList done");
 
     // Register L/R bumpers for destination toggle
     registerAction("", brls::ControllerButton::BUTTON_LB, [this](brls::View* view) {
@@ -107,6 +125,7 @@ FileBrowserView::FileBrowserView()
         }
         return true;
     });
+    fbDebugLog("FileBrowserView: ctor complete");
 }
 
 void FileBrowserView::setupAppletBadge()
