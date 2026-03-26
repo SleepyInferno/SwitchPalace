@@ -107,7 +107,7 @@ Note: Phases 2, 3, and 5 all depend on Phase 1 but not on each other. Phase 4 de
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Install Pipeline | 0/3 | Not started | - |
+| 1. Foundation & Install Pipeline | 1/3 | In Progress|  |
 | 2. PC Companion & USB Install | 0/2 | Not started | - |
 | 3. Network Install | 0/2 | Not started | - |
 | 4. MTP, File & Game Management | 0/3 | Not started | - |

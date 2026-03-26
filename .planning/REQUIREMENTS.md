@@ -64,10 +64,10 @@
 
 ### Trust & Quality
 
-- [ ] **TRUST-01**: All source code is fully open (no obfuscation, no binary blobs)
-- [ ] **TRUST-02**: Reproducible builds documented so community can verify distributed binaries
-- [ ] **TRUST-03**: No hardcoded external network calls on app launch (user controls all outbound connections)
-- [ ] **TRUST-04**: App detects applet mode vs application mode and adapts memory usage accordingly
+- [x] **TRUST-01**: All source code is fully open (no obfuscation, no binary blobs)
+- [x] **TRUST-02**: Reproducible builds documented so community can verify distributed binaries
+- [x] **TRUST-03**: No hardcoded external network calls on app launch (user controls all outbound connections)
+- [x] **TRUST-04**: App detects applet mode vs application mode and adapts memory usage accordingly
 
 ## v2 Requirements
 
@@ -115,10 +115,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INST-04 | Phase 1: Foundation & Install Pipeline | Pending |
 | INST-05 | Phase 1: Foundation & Install Pipeline | Pending |
 | INST-06 | Phase 1: Foundation & Install Pipeline | Pending |
-| TRUST-01 | Phase 1: Foundation & Install Pipeline | Pending |
-| TRUST-02 | Phase 1: Foundation & Install Pipeline | Pending |
-| TRUST-03 | Phase 1: Foundation & Install Pipeline | Pending |
-| TRUST-04 | Phase 1: Foundation & Install Pipeline | Pending |
+| TRUST-01 | Phase 1: Foundation & Install Pipeline | Complete |
+| TRUST-02 | Phase 1: Foundation & Install Pipeline | Complete |
+| TRUST-03 | Phase 1: Foundation & Install Pipeline | Complete |
+| TRUST-04 | Phase 1: Foundation & Install Pipeline | Complete |
 | USB-01 | Phase 2: PC Companion & USB Install | Pending |
 | USB-02 | Phase 2: PC Companion & USB Install | Pending |
 | USB-03 | Phase 2: PC Companion & USB Install | Pending |
