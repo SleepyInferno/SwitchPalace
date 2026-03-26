@@ -44,7 +44,8 @@ private:
     std::atomic<bool> m_cancel{false};
     std::mutex m_progressMutex;
     install::InstallProgress m_latestProgress;
-    bool m_installComplete = false;
+    std::atomic<bool> m_installComplete{false};
+    bool m_hasTransitioned = false;
 
     // UI update task (runs on main thread)
     class UIUpdateTask : public brls::RepeatingTask {

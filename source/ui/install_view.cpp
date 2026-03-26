@@ -4,8 +4,19 @@
 #include "install/nsp.hpp"
 #include "install/xci.hpp"
 #include "util/file_util.hpp"
+#include <cstdio>
 
 namespace switchpalace::ui {
+
+static void ivLog(const char* msg)
+{
+#ifdef __SWITCH__
+    FILE* f = fopen("sdmc:/switchpalace_debug.log", "a");
+    if (f) { fprintf(f, "%s\n", msg); fclose(f); }
+#else
+    (void)msg;
+#endif
+}
 
 InstallProgressView::InstallProgressView(
     const std::vector<switchpalace::util::FileEntry>& files,
@@ -125,6 +136,7 @@ InstallProgressView::InstallProgressView(
     addView(bottomBar);
 
     // Start the install thread
+    ivLog("install: starting install thread");
     startInstallThread();
 
     // Start UI update task (every 100ms on main thread)
@@ -271,7 +283,8 @@ void InstallProgressView::startInstallThread()
             }
         }
 
-        m_installComplete = true;
+        ivLog("install: thread complete");
+        m_installComplete.store(true);
     });
 
     // Register a repeating timer to update the UI from the main thread
@@ -354,8 +367,10 @@ void InstallProgressView::updateUI()
         m_lastRenderedResult++;
     }
 
-    if (m_installComplete)
+    if (m_installComplete.load() && !m_hasTransitioned)
     {
+        m_hasTransitioned = true;
+        m_updateTask->stop();
         transitionToSummary();
     }
 }
@@ -369,6 +384,7 @@ void InstallProgressView::onCancelPressed()
 
 void InstallProgressView::transitionToSummary()
 {
+    ivLog("install: transitionToSummary called");
     std::vector<install::InstallResult> results;
     {
         std::lock_guard<std::mutex> lock(m_progressMutex);
