@@ -7,12 +7,12 @@
 
 ### Installation
 
-- [ ] **INST-01**: User can install NSP files (base games, DLC, updates) to SD or NAND
-- [ ] **INST-02**: User can install XCI files (cartridge dumps) to SD or NAND
-- [ ] **INST-03**: User can install NSZ and XCZ files (compressed formats) with on-the-fly decompression
+- [x] **INST-01**: User can install NSP files (base games, DLC, updates) to SD or NAND
+- [x] **INST-02**: User can install XCI files (cartridge dumps) to SD or NAND
+- [x] **INST-03**: User can install NSZ and XCZ files (compressed formats) with on-the-fly decompression
 - [ ] **INST-04**: User can choose install destination (SD card vs NAND) before each install
-- [ ] **INST-05**: User can verify file integrity via hash check during installation
-- [ ] **INST-06**: Installation is atomic — interrupted installs are rolled back, leaving no orphaned NCM placeholders
+- [x] **INST-05**: User can verify file integrity via hash check during installation
+- [x] **INST-06**: Installation is atomic — interrupted installs are rolled back, leaving no orphaned NCM placeholders
 
 ### Network Install
 
@@ -109,12 +109,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INST-01 | Phase 1: Foundation & Install Pipeline | Pending |
-| INST-02 | Phase 1: Foundation & Install Pipeline | Pending |
-| INST-03 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-01 | Phase 1: Foundation & Install Pipeline | Complete |
+| INST-02 | Phase 1: Foundation & Install Pipeline | Complete |
+| INST-03 | Phase 1: Foundation & Install Pipeline | Complete |
 | INST-04 | Phase 1: Foundation & Install Pipeline | Pending |
-| INST-05 | Phase 1: Foundation & Install Pipeline | Pending |
-| INST-06 | Phase 1: Foundation & Install Pipeline | Pending |
+| INST-05 | Phase 1: Foundation & Install Pipeline | Complete |
+| INST-06 | Phase 1: Foundation & Install Pipeline | Complete |
 | TRUST-01 | Phase 1: Foundation & Install Pipeline | Complete |
 | TRUST-02 | Phase 1: Foundation & Install Pipeline | Complete |
 | TRUST-03 | Phase 1: Foundation & Install Pipeline | Complete |
