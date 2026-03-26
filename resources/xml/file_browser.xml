@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File browser layout - programmatic layout used in FileBrowserView constructor -->
+<brls:Box
+    xmlns:brls="https://github.com/aspect-ui/borealis"
+    axis="column"
+    grow="1">
+</brls:Box>
