@@ -1,0 +1,36 @@
+main: entered
+mode: APPLET
+borealis: calling Application::init
+borealis: Application::init OK, calling createWindow
+deko3d: SwitchVideoContext ctor start
+deko3d: updateWindowSize
+deko3d: DeviceMaker::create
+deko3d: QueueMaker::create
+deko3d: imagesPool::emplace
+deko3d: codePool::emplace
+deko3d: dataPool::emplace
+deko3d: CmdBufMaker::create
+deko3d: createFramebufferResources
+deko3d: createFramebufferResources OK
+deko3d: renderer::emplace
+deko3d: nvgCreateDk
+deko3d: SwitchVideoContext ctor complete
+borealis: createWindow OK
+main: entered
+mode: APPLICATION
+borealis: calling Application::init
+borealis: Application::init OK, calling createWindow
+deko3d: SwitchVideoContext ctor start
+deko3d: updateWindowSize
+deko3d: DeviceMaker::create
+deko3d: QueueMaker::create
+deko3d: imagesPool::emplace
+deko3d: codePool::emplace
+deko3d: dataPool::emplace
+deko3d: CmdBufMaker::create
+deko3d: createFramebufferResources
+deko3d: createFramebufferResources OK
+deko3d: renderer::emplace
+deko3d: nvgCreateDk
+deko3d: SwitchVideoContext ctor complete
+borealis: createWindow OK
