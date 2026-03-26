@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-26T18:00:00.000Z",
+  "timestamp": "2026-03-26T17:07:35.467Z",
   "phase": "01",
   "phase_name": "foundation-install-pipeline",
   "phase_dir": ".planning/phases/01-foundation-install-pipeline",
@@ -14,10 +14,11 @@
     {"id": 3, "name": "01-03 UI views wired to install pipeline", "status": "done", "commit": "584174d"},
     {"id": "fix-1", "name": "USE_STD_THREAD=ON pthread crash fix", "status": "done", "commit": "5f15763"},
     {"id": "fix-2", "name": "ScrollingFrame.setPadding crash fix + icon + Docker rebuild", "status": "done", "commit": "e092866"},
-    {"id": "fix-3", "name": "Install crash triple fix: wrong hash check + data race + repeated transitionToSummary", "status": "done", "commit": "uncommitted"}
+    {"id": "fix-3", "name": "Install crash triple fix: wrong hash check + data race + repeated transitionToSummary", "status": "done", "commit": "280efdb"},
+    {"id": "fix-4", "name": "brls::sync() transition fix + double popActivity fix + new icon", "status": "done", "commit": "280efdb"}
   ],
   "remaining_tasks": [
-    {"id": 4, "name": "hw-verify: user testing now, awaiting results", "status": "in_progress"},
+    {"id": 4, "name": "hw-verify: user testing now (4th build), awaiting results", "status": "in_progress"},
     {"id": 5, "name": "Remove fbDebugLog/debugLog/ivLog calls after confirmed working", "status": "not_started"},
     {"id": 6, "name": "Write 01-03-SUMMARY.md to close Phase 01", "status": "not_started"}
   ],
@@ -25,8 +26,13 @@
   "human_actions_pending": [
     {
       "action": "Return with hardware test results (log files or pass report)",
-      "context": "User needs to test dist/SwitchPalace.nro on Switch hardware — this is the third build iteration",
+      "context": "User needs to test dist/SwitchPalace.nro (6.8MB, commit 280efdb) — this is the fourth build iteration",
       "blocking": true
+    },
+    {
+      "action": "Clarify Codex workflow intent on resume",
+      "context": "User wants crash debugging split between Claude and Codex to reduce context load. Confirm: (a) OpenAI Codex CLI running in parallel externally, or (b) Claude Code agent subagents for internal research delegation. Implement before starting any new debug round.",
+      "blocking": false
     }
   ],
   "decisions": [
@@ -35,18 +41,14 @@
     {"decision": "__nx_heap_size = 64MB (0x4000000)", "rationale": "Safe ceiling for both applet and application mode", "phase": "01"},
     {"decision": "USE_STD_THREAD=ON retained", "rationale": "Fixes borealis pthread task loop crash in NRO context (prior session)", "phase": "01"},
     {"decision": "setPadding moved from m_scrollFrame to m_listContainer", "rationale": "borealis ScrollingFrame.setPadding calls fatal() -> throws std::logic_error -> uncaught = Instruction Abort on Switch", "phase": "01"},
-    {"decision": "resources/icon.jpg created (256x256 JPEG)", "rationale": "User requested generic icon; castle motif, Royal Sapphire palette; wired via --icon= in elf2nro", "phase": "01"},
-    {"decision": "hbmenu crash (folder_icon.bin null deref) is unrelated", "rationale": "hbmenu-internal bug, not caused by our NRO", "phase": "01"},
-    {"decision": "Removed wrong hash check in nsp.cpp: memcmp(sha256_hash, content_id, 16)", "rationale": "NCA content IDs are NOT SHA-256 hashes; NCM verifies integrity internally; this check failed every install immediately", "phase": "01"},
-    {"decision": "m_installComplete changed to std::atomic<bool> in install_view.hpp", "rationale": "Plain bool is a data race — install thread writes, main thread reads", "phase": "01"},
-    {"decision": "Added m_hasTransitioned guard + m_updateTask->stop() before transitionToSummary()", "rationale": "Without guard, UIUpdateTask fires every 100ms after install completes, pushing unlimited SummaryView activities onto borealis stack -> null deref crash at ~43% offset in binary (borealis activity management)", "phase": "01"}
+    {"decision": "resources/icon.jpg updated to Grand Nintendoh Palace 256x256 JPEG", "rationale": "User-provided image, center-cropped from 1024x559 source", "phase": "01"},
+    {"decision": "Removed wrong hash check in nsp.cpp: memcmp(sha256_hash, content_id, 16)", "rationale": "NCA content IDs are NOT SHA-256 hashes; check failed every install immediately", "phase": "01"},
+    {"decision": "m_installComplete changed to std::atomic<bool>", "rationale": "Plain bool is a data race — install thread writes, main thread reads", "phase": "01"},
+    {"decision": "Added m_hasTransitioned guard + m_updateTask->stop() before brls::sync()", "rationale": "Prevents queuing multiple sync() calls if updateUI() fires again before sync executes", "phase": "01"},
+    {"decision": "transitionToSummary deferred via brls::sync()", "rationale": "pushActivity called from Ticking::updateTickings() (before frame()) caused Data Abort at X[0]=null. brls::sync() defers to performSyncTasks() after frame().", "phase": "01"},
+    {"decision": "Double popActivity in summary_view.cpp fixed with callback chain", "rationale": "Deferred deletion keeps activity on stack until animation ends; two sync pops both target the same activity", "phase": "01"}
   ],
-  "uncommitted_files": [
-    "source/ui/install_view.cpp",
-    "include/ui/install_view.hpp",
-    "source/install/nsp.cpp",
-    "dist/SwitchPalace.nro"
-  ],
-  "next_action": "Review hardware test results from user. Watch switchpalace_debug.log for: 'install: starting install thread' -> 'install: thread complete' -> 'install: transitionToSummary called' (exactly once). If pass: remove debug logging (fbDebugLog in file_browser.cpp, debugLog in main.cpp, ivLog in install_view.cpp), write 01-03-SUMMARY.md. If crash: analyze new Atmosphere logs and fix.",
-  "context_notes": "Three crash rounds total. Round 1 (session 1): pthread task loop crash fixed with USE_STD_THREAD=ON. Round 2 (session 2): ScrollingFrame.setPadding calls NO_PADDING macro -> fatal() -> std::logic_error. Round 3 (session 3, this session): Install crash from Atmosphere log offset analysis — Data Abort at 0x0, X[0]=null, crash in borealis activity management code (~43% of 1.9MB binary). Three bugs fixed: (1) wrong hash check in nsp.cpp failed all installs immediately, (2) plain bool data race on m_installComplete, (3) no guard on transitionToSummary caused borealis activity stack corruption. Debug logging (fbDebugLog/debugLog/ivLog) still present — remove after confirmed working."
+  "uncommitted_files": [],
+  "next_action": "1. Clarify Codex workflow intent with user. 2. Receive hardware test results. 3. Check switchpalace_debug.log for 11 checkpoints. 4. If pass: remove debug logging, write 01-03-SUMMARY.md. 5. If crash: read last checkpoint reached, delegate source research to subagent, apply fix.",
+  "context_notes": "Four crash rounds total. All prior bugs fixed. Session 4 root cause: pushActivity called from inside updateTickings() (runs before frame() in main loop). Fix: brls::sync() defers to performSyncTasks() after frame(). Debug sessions ran context high because 15+ borealis source files were read one-by-one in main context. Next debug round should delegate source-file research to Explore subagent and only receive findings summary."
 }
