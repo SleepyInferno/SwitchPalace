@@ -2,6 +2,9 @@
 
 #include "install/install.hpp"
 #include "install/pfs0.hpp"
+#include "nx/content_mgmt.hpp"
+
+#include <memory>
 
 namespace switchpalace::install {
 
@@ -18,8 +21,8 @@ public:
 private:
     PFS0 m_pfs0;
     uint64_t m_totalSize = 0;
-    // Placeholder tracking for rollback -- populated during execute()
-    std::vector<uint8_t> m_placeholderIds; // serialized NcmPlaceHolderIds
+    std::vector<uint8_t> m_headerData; // Full PFS0 header for re-reading
+    std::unique_ptr<nx::ContentManager> m_contentManager;
 };
 
 } // namespace switchpalace::install

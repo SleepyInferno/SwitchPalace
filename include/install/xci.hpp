@@ -2,6 +2,9 @@
 
 #include "install/install.hpp"
 #include "install/hfs0.hpp"
+#include "nx/content_mgmt.hpp"
+
+#include <memory>
 
 namespace switchpalace::install {
 
@@ -19,7 +22,9 @@ private:
     HFS0 m_rootHfs0;
     HFS0 m_secureHfs0;
     uint64_t m_totalSize = 0;
-    std::vector<uint8_t> m_placeholderIds;
+    uint64_t m_securePartitionOffset = 0; // Absolute offset to secure HFS0 data
+    std::vector<uint8_t> m_secureHeaderData;
+    std::unique_ptr<nx::ContentManager> m_contentManager;
 };
 
 } // namespace switchpalace::install
