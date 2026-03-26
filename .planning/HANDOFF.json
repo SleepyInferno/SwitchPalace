@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-26T12:39:10.958Z",
+  "phase": "01",
+  "phase_name": "foundation-install-pipeline",
+  "phase_dir": ".planning/phases/01-foundation-install-pipeline",
+  "plan": 3,
+  "task": 3,
+  "total_tasks": 3,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "01-01 core install pipeline", "status": "done", "commit": "777a7a7"},
+    {"id": 2, "name": "01-02 NSP/XCI installers", "status": "done", "commit": "f04cbf7"},
+    {"id": 3, "name": "01-03 UI views wired", "status": "done", "commit": "584174d"}
+  ],
+  "remaining_tasks": [
+    {"id": 4, "name": "hw-verify: hardware testing checkpoint", "status": "blocked_on_crash"}
+  ],
+  "blockers": [
+    {
+      "description": "App crashes on real Switch hardware (fw 21.1.0 / Atmosphere 1.10.1) with error 2168-0002 (data abort) during deko3D initialization",
+      "type": "technical",
+      "workaround": "Debug NRO built with SD card logging — last line of sdmc:/switchpalace_debug.log identifies exact crash step"
+    }
+  ],
+  "human_actions_pending": [
+    {
+      "action": "Copy dist/SwitchPalace.nro to sd:/switch/SwitchPalace/SwitchPalace.nro and launch it",
+      "context": "NRO now writes sdmc:/switchpalace_debug.log before each deko3D init step. Bring back that log file + newest file in sd:/atmosphere/crash_reports/",
+      "blocking": true
+    }
+  ],
+  "decisions": [
+    {"decision": "Added nifmInitialize(NifmServiceType_User) to switch_wrapper.c", "rationale": "borealis SwitchPlatform calls nifm status functions every frame for status bar; uninitialized handle = IPC crash = 2168-0001", "phase": "01"},
+    {"decision": "Switched video backend from GLFW+EGL to deko3D (-DUSE_DEKO3D=ON)", "rationale": "GLFW glfwInit() fails in applet mode on fw 21.1.0 — EGL/drm_nouveau applet-mode incompatibility; borealis fatal() throws uncaught std::logic_error -> abort. deko3D is the standard Switch GPU API used by all working borealis homebrew", "phase": "01"},
+    {"decision": "Reduced __nx_heap_size 128MB -> 64MB", "rationale": "128MB is the hbloader ceiling in applet mode with no headroom", "phase": "01"},
+    {"decision": "Added try/catch around brls::Application::init()+createWindow()", "rationale": "borealis fatal() throws std::logic_error; uncaught = std::terminate -> abort -> 2168-0001", "phase": "01"},
+    {"decision": "Added SD card debug logging to main.cpp and borealis switch_video.cpp", "rationale": "deko3D data abort (2168-0002) happens before any display is up; file logging to sdmc:/ is the only way to pinpoint which init step crashes", "phase": "01"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "User provides sdmc:/switchpalace_debug.log content. Last line = exact deko3D crash step. Fix that step and rebuild. Then remove debug logging before final hw-verify.",
+  "context_notes": "Three successive crashes fixed: (1) nifm uninitialized -> IPC abort, (2) GLFW glfwInit fail in applet mode -> uncaught exception abort, (3) current: deko3D data abort - unknown which step. Debug build will identify it. NRO is 6.5MB with deko3D shaders embedded. Build is via Docker only (local devkitPro lacks GLFW/EGL but has deko3D; Docker has full devkitpro/devkita64 with both)."
+}
