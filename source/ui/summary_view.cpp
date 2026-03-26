@@ -113,10 +113,13 @@ SummaryView::SummaryView(const std::vector<install::InstallResult>& results)
     addView(dismissLabel);
 
     // Register B button to pop back to file browser
+    // Pop SummaryView first, then pop InstallProgressView in the callback once
+    // the first animation + stack removal has completed (avoids double-free bug
+    // from two synchronous pops on a deferred-deletion activity stack).
     registerAction("Back", brls::ControllerButton::BUTTON_B, [](brls::View* view) {
-        // Pop the summary activity and the install activity to return to file browser
-        brls::Application::popActivity();
-        brls::Application::popActivity();
+        brls::Application::popActivity(brls::TransitionAnimation::FADE, []() {
+            brls::Application::popActivity();
+        });
         return true;
     });
 }

@@ -369,9 +369,13 @@ void InstallProgressView::updateUI()
 
     if (m_installComplete.load() && !m_hasTransitioned)
     {
+        ivLog("install: transition guard triggered");
         m_hasTransitioned = true;
         m_updateTask->stop();
-        transitionToSummary();
+        ivLog("install: queuing transitionToSummary via brls::sync");
+        brls::sync([this]() {
+            transitionToSummary();
+        });
     }
 }
 
@@ -391,8 +395,11 @@ void InstallProgressView::transitionToSummary()
         results = m_results;
     }
 
+    ivLog("install: creating SummaryView");
     auto* summaryView = new SummaryView(results);
+    ivLog("install: pushActivity SummaryView");
     brls::Application::pushActivity(new brls::Activity(summaryView));
+    ivLog("install: pushActivity returned");
 }
 
 } // namespace switchpalace::ui

@@ -88,6 +88,7 @@ FileBrowserView::FileBrowserView()
     // Scrolling file list
     fbDebugLog("FileBrowserView: new ScrollingFrame");
     m_scrollFrame = new brls::ScrollingFrame();
+    m_scrollFrame->setScrollingBehavior(brls::ScrollingBehavior::CENTERED);
     fbDebugLog("FileBrowserView: scrollFrame: setGrow");
     m_scrollFrame->setGrow(1.0f);
 
@@ -483,8 +484,11 @@ void FileBrowserView::onInstallPressed()
     }
 
     // All checks passed: navigate to install progress view
+    fbDebugLog("onInstallPressed: creating InstallProgressView");
     auto* installView = new InstallProgressView(selectedFiles, m_destination);
+    fbDebugLog("onInstallPressed: pushActivity InstallProgressView");
     brls::Application::pushActivity(new brls::Activity(installView));
+    fbDebugLog("onInstallPressed: pushActivity returned");
 }
 
 } // namespace switchpalace::ui
